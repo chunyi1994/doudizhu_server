@@ -14,7 +14,7 @@ class GameRoom
 {
 public:
     explicit GameRoom(int id);
-    std::size_t roomPlayersNum() const; //判断是否满人
+    std::size_t roomPlayersNum() const;
     bool full() const;
     void removePlayer(Player::Pointer);
     void addPlayer(Player::Pointer);
@@ -41,7 +41,8 @@ private:
     void clear();     //清空状态
     void clearCards();
 
-    std::string playerCardString(int num);//把所有牌从int类型翻译成中文的string
+    //把所有牌从int类型翻译成中文的string
+    std::string playerCardString(int num);
     std::string cardString(std::set<PlayingCards>& cards);
 
     //游戏逻辑bool判断

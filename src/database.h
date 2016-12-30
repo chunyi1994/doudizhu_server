@@ -3,6 +3,7 @@
 #include <fstream>
 #include <map>
 #include "utils.h"
+#include "../logging/logger.h"
 namespace doudizhu {
 
 const char* DATABASE_LOGIN_PATH = "database/userinfo/";
@@ -10,7 +11,7 @@ const char* DATABASE_LOGIN_PATH = "database/userinfo/";
 static bool login_aux(const std::string& username, const std::string& password) {
     std::ifstream ifs(DATABASE_LOGIN_PATH + username);
     if (!ifs) {
-        utils::log("不存在的用户名");
+        LOG_ERROR<<"不存在的用户名";
         return false;
     }
     std::string line;
@@ -24,25 +25,27 @@ static bool login_aux(const std::string& username, const std::string& password) 
         value = line.substr(pos + 1, line.size() - pos - 1);
         infomap[key] = value;
     }
-    utils::log("正确的密码是：" + infomap["password"]);
-    if (password != infomap["password"]) return false;
-    utils::log("验证成功");
+    if (password != infomap["password"]) {
+        LOG_ERROR<< "登录失败，正确的密码是：" << infomap["password"];
+        return false;
+    }
+    LOG_INFO <<"登陆成功";
     return true;
 }
 
 static bool register_aux(const std::string& username, const std::string& password) {
     std::ifstream ifs(DATABASE_LOGIN_PATH + username);
     if (ifs) {
-        utils::log("用户名已存在");
+        LOG_ERROR<<"用户名已存在";
         return false;
     }
     std::ofstream ofs(DATABASE_LOGIN_PATH + username);
     if (!ofs) {
-        utils::log("写入文件错误");
+        LOG_ERROR<<"写入文件错误";
         return false;
     }
     ofs<<"password:"<<password<<"\n";
-    utils::log("写入文件成功");
+    LOG_INFO<<"写入文件成功";
     return true;
 }
 

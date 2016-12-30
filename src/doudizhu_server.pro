@@ -22,7 +22,9 @@ SOURCES += main.cpp \
     game_manager.cpp \
     player.cpp \
     cards_factory.cpp \
-    game_room.cpp
+    game_room.cpp \
+    logging/log_recorder.cpp \
+    logging/logger.cpp
 
 HEADERS += \
     utils.h \
@@ -37,5 +39,9 @@ HEADERS += \
     database.h \
     game_room.h \
     cards_algo.h \
-    unittest.h
+    unittest.h \
+    logging/blocking_queue.h \
+    logging/log_recorder.h \
+    logging/logger.h \
+    logging/singleton.h
 

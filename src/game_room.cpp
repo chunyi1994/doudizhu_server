@@ -7,6 +7,7 @@
 #include "playing_cards.h"
 #include "cards_factory.h"
 #include "cards_algo.h"
+#include "../logging/logger.h"
 namespace doudizhu {
 
 GameRoom::GameRoom(int id) :
@@ -66,48 +67,48 @@ void GameRoom::handleCmdShowCards(Player::Pointer player) {
 
 void GameRoom::handleCmdPlay(Player::Pointer player, std::vector<std::string> &results) {
     if (gameState_ != STATE_PLAY_CARDS) {
-        utils::log("play:不是出牌的时候");
+        LOG_ERROR<<"不是出牌的时候";
         return;
     }
     if (results.size() <= 2) {
-        utils::log("play:参数个数错误");
+        LOG_ERROR<<"参数个数错误";
         return;
     }
     if(player->playerNumInRoom() != turnPlayRoomId_) {
-        utils::log("play:还没轮到他出牌");
+        LOG_ERROR<<"还没轮到他出牌";
         return;
     }
     std::set<PlayingCards> playCards;
     for(int i = 2; i < (int)results.size(); i++) {
         if (!utils::isDigit(results[i])) {
-            utils::log("play:参数错误1：参数应该为数字");
+            LOG_ERROR<<"参数错误，参数应该为数字";
             return;
         }
         int card_num = utils::string2int(results[i]);
         if (!isPlayCardsEnumNum(card_num)) {
-            utils::log("play:参数错误2：参数数字不能代表牌型");
+            LOG_ERROR<<"参数错误2：参数数字不能代表牌型";
             return;
         }
         playCards.insert((PlayingCards)card_num);
     }
     Cards::Pointer cards = CardsFactory::create(playCards);
     if (isWrongCards(cards)) {
-        utils::log("play:错误的牌：斗地主没有这样的牌型");
+        LOG_ERROR<<"错误的牌：斗地主没有这样的牌型";
         return;
     }
     //判断出牌是否是自己手牌里有的，防止造假
     if (!isHisCards(player, cards)) {
-        utils::log("play:出了自己没有的牌");
+        LOG_ERROR<<"出了自己没有的牌";
         return;
     }
     //如果是压别人的牌，需要判断牌型和大小
     if (lastCards_) {
         if (!lastCards_->isTheSameType(cards) && !isBoom(playCards)) {
-            utils::log("play:出牌类型和上家不一样");
+            LOG_ERROR<<"出牌类型和上家不一样";
             return;
         }
         if (!cards->greaterThan(lastCards_)) {
-            utils::log("play:出了更小的牌");
+            LOG_ERROR<<"出了更小的牌";
             return;
         }
     }
@@ -130,23 +131,21 @@ void GameRoom::handleCmdPlay(Player::Pointer player, std::vector<std::string> &r
 
 void GameRoom::handleCmdNoPlay(Player::Pointer player) {
     if (gameState_ != STATE_PLAY_CARDS) {
-        utils::log("play:不是出牌的时候");
+        LOG_ERROR<<"不是出牌的时候";
         return;
     }
     if (player->playerNumInRoom() != turnPlayRoomId_) {
-        utils::log("play:还没轮到他出牌");
+        LOG_ERROR<<"play:还没轮到他出牌";
         return;
     }
-    utils::log("1现在轮到：" + utils::int2string(turnPlayRoomId_));
     turnPlayRoomId_ = nextPlayerRoomId();
-    utils::log("1现在改成：" + utils::int2string(turnPlayRoomId_));
     if (turnPlayRoomId_ == lastCardPlayerRoomId_) lastCards_ = nullptr;
     sendToClientPleasePlay(players_[turnPlayRoomId_]);
 }
 
 void GameRoom::handleCmdChat(Player::Pointer player, std::vector<std::string> &results) {
     if (results.size() != 3) {
-        utils::log("chat 参数错误");
+        LOG_ERROR<<"参数错误";
         return;
     }
     std::string msg = results[2];
@@ -186,6 +185,7 @@ void GameRoom::handleCmdRob(
         return;
     }
     if (robTheLandlordOrder_.front() != player->playerNumInRoom()) {
+        LOG_ERROR<<"没轮到他抢地主";
         return; //如果抢地主的顺序还没轮到他，就退出
     }
     if (rob) {
@@ -198,7 +198,7 @@ void GameRoom::handleCmdRob(
 
 void GameRoom::playerRob(std::vector<std::string>& results, Player::Pointer player) {
     if (results.size() != 3) {
-        utils::log("抢地主参数错误");
+        LOG_ERROR<<"抢地主参数错误";
         return;
     }
     //倍数
@@ -207,7 +207,7 @@ void GameRoom::playerRob(std::vector<std::string>& results, Player::Pointer play
     multiplying_power_int = utils::string2int(results[2]);
     //申请的倍数不可以比别人压的更小
     if (multiplying_power_int < multiplyingPower_) {
-        utils::log("抢地主倍数错误");
+        LOG_ERROR<<"抢地主倍数错误";
         return;
     }
     sendToClientsSomeoneRobLandlord(player, results[2]);
@@ -276,7 +276,7 @@ void GameRoom::removePlayer(Player::Pointer player) {
 
 void GameRoom::addPlayer(Player::Pointer player) {
     if (full()) {
-        utils::log("addPlayer:超过了本房间最大容纳的人数");
+        LOG_ERROR<<"超过了本房间最大容纳的人数,添加用户失败";
         return;
     }
     player->setPlayerNumInRoom(players_.size());

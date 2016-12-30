@@ -3,7 +3,7 @@
 #include <functional>
 #include <string>
 
-#include "utils.h"
+#include "../logging/logger.h"
 namespace doudizhu {
 
 TcpConnection::TcpConnection(io_service &io_service) :
@@ -12,7 +12,7 @@ TcpConnection::TcpConnection(io_service &io_service) :
 }
 
 TcpConnection::~TcpConnection() {
-    utils::log("~TcpConnection");
+    LOG_DEBUG<<"~TcpConnection";
 }
 
 TcpConnection::ConnBuffer &TcpConnection::buf() {

@@ -1,5 +1,6 @@
 #include "player.h"
 #include "utils.h"
+#include "../logging/logger.h"
 namespace doudizhu {
 Player::Player(TcpConnection::Pointer conn) :
     conn_(conn),
@@ -16,7 +17,7 @@ void Player::send(const std::string &msg)
     if (conn) {
         conn->send(msg);
     } else {
-        utils::log("player:send error");
+        LOG_ERROR<<"player send error";
     }
 }
 

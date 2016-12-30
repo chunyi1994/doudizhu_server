@@ -78,11 +78,7 @@ void test_cards() {
             HEARTS_4, HEARTS_5, DIAMONDS_5,HEARTS_6, DIAMONDS_6};  //333 444 55 66
     EXCEPT_TRUE(isAirplaneWithWings(set1, airplane));
 
-    set1 = {DIAMONDS_Q,
-            HEARTS_Q,
-            SPADES_Q,
-            CLUBS_K,
-            HEARTS_K,
+    set1 = {DIAMONDS_Q,HEARTS_Q,SPADES_Q,CLUBS_K,HEARTS_K,
             SPADES_K, CLUBS_3, DIAMONDS_3,CLUBS_4, CLUBS_5};  //QQQ KKK 33 45
     EXCEPT_FALSE(isAirplaneWithWings(set1, airplane));
 

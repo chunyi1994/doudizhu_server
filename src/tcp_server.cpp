@@ -4,7 +4,7 @@
 #include <utility>
 
 #include "utils.h"
-
+#include "../logging/logger.h"
 
 namespace doudizhu {
 
@@ -24,6 +24,7 @@ void TcpServer::startAccept() {
 
 void TcpServer::handleAccept(TcpConnection::Pointer conn,  const boost::system::error_code &ec) {
     if (!ec) {
+        LOG_INFO<<"新连接来了";
         gameManager_->addPlayer(conn); //gameManager_里面有个成员 持有conn的引用计数，不会因此而析构
         conn->setCloseCallback(
                     std::bind(&TcpServer::handleClose, this, std::placeholders::_1));
@@ -32,7 +33,7 @@ void TcpServer::handleAccept(TcpConnection::Pointer conn,  const boost::system::
         conn->start();
         gameManager_->processClientMsg(conn, "login gaochunyi gaochunji");
         gameManager_->processClientMsg(conn, "game ready");
-
+        LOG_INFO<<"玩家自动登陆成功";
     } else {
         utils::log(ec.message());
     }

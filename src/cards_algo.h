@@ -75,7 +75,7 @@ static int isThreeWithTwo(const std::set<PlayingCards>& cards) {
     std::advance(iter_begin2, 2);
     //前三个 后两个相等  或者 前两个后三个相等
     if (is_same_cards(cards.begin(), iter_end1) &&
-            is_same_cards(iter_end1, cards.end()) ){
+            is_same_cards(iter_end1, cards.end())) {
         return 0;
     }else if (is_same_cards(iter_begin2, cards.end()) &&
               is_same_cards(cards.begin(), iter_begin2)  ) {
@@ -157,8 +157,6 @@ static bool isTripleStraight(const std::set<PlayingCards>& cards) {
     }
     return true; //todo
 }
-
-
 
 //飞机带翅膀
 static bool isAirplaneWithWings(const std::set<PlayingCards>& cards, Airplane& airplane) {
